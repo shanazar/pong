@@ -1,127 +1,108 @@
-#!/usr/bin/env python
-#
-#       This program is free software; you can redistribute it and/or modify
-#       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
-#       (at your option) any later version.
-#       
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
-#
-#		It's my first actual game-making attempt. I know code could be much better 
-#		with classes or defs but I tried to make it short and understandable with very 
-#		little knowledge of python and pygame(I'm one of them). Enjoy.
-
+import random
 import pygame
 from pygame.locals import *
 from sys import exit
-import random
 
+#Mängu initsialiseerimine
 pygame.init()
 
-screen=pygame.display.set_mode((640,480),0,32)
-pygame.display.set_caption("Pong Pong!")
+#Mänguvälja deklareerimine
+ekraan = pygame.display.set_mode((640, 480), 0, 32)
+pygame.display.set_caption("Pongimäng")
+taust = pygame.Surface((640, 480))
+kardin = taust.convert()
+kardin.fill((0, 0, 0))
+bar = pygame.Surface((10, 50))
+mängija1 = bar.convert()
+mängija1.fill((100, 100, 200))
+mängija2 = bar.convert()
+mängija2.fill((255, 100, 100))
+ringipindala = pygame.Surface((30, 30))
+circ = pygame.draw.circle(ringipindala, (0, 255, 0), (int(10), int(10)), int(10))
+pall = ringipindala.convert()
+pall.set_colorkey((0, 0, 0))
+mängija1_x, mängija2_x = 10, 620
+mängija1_y, mängija2_y = 215, 215
+palli_x, palli_y = 307, 232
+mängija1_move, mängija2_move = 0, 0.
+vertikaalne_kiirus, horisonaatlne_kiirus, speed_circ = 250, 250, 250
+mängija1_skoor, mängija2_skoor = 0, 0
+# clock and font objects
+kell = pygame.time.Clock()
+font = pygame.font.SysFont("calibri", 40)
 
-#Creating 2 bars, a ball and background.
-back = pygame.Surface((640,480))
-background = back.convert()
-background.fill((0,0,0))
-bar = pygame.Surface((10,50))
-bar1 = bar.convert()
-bar1.fill((0,0,255))
-bar2 = bar.convert()
-bar2.fill((255,0,0))
-circ_sur = pygame.Surface((15,15))
-circ = pygame.draw.circle(circ_sur,(0,255,0),(int(15/2),int(15/2)),int(15/2))
-circle = circ_sur.convert()
-circle.set_colorkey((0,0,0))
-
-# some definitions
-bar1_x, bar2_x = 10. , 620.
-bar1_y, bar2_y = 215. , 215.
-circle_x, circle_y = 307.5, 232.5
-bar1_move, bar2_move = 0. , 0.
-speed_x, speed_y, speed_circ = 250., 250., 250.
-bar1_score, bar2_score = 0,0
-#clock and font objects
-clock = pygame.time.Clock()
-font = pygame.font.SysFont("calibri",40)
+def tõrjumine(x,y,mängija_x,mängija_y):
+    if y >= mängija_y - 7.5 and y <= mängija_y + 42.5 and (x<25 or x>615):
+        return True
 
 while True:
-    
-    for event in pygame.event.get():
-        if event.type == QUIT:
+    for sündmus in pygame.event.get():
+        if sündmus.type == QUIT:
             exit()
-        if event.type == KEYDOWN:
-            if event.key == K_UP:
-                bar1_move = -ai_speed
-            elif event.key == K_DOWN:
-                bar1_move = ai_speed
-        elif event.type == KEYUP:
-            if event.key == K_UP:
-                bar1_move = 0.
-            elif event.key == K_DOWN:
-                bar1_move = 0.
-    
-    score1 = font.render(str(bar1_score), True,(255,255,255))
-    score2 = font.render(str(bar2_score), True,(255,255,255))
+        if sündmus.type == KEYDOWN:
+            if sündmus.key == K_UP:
+                mängija1_move = -ai_speed
+            elif sündmus.key == K_DOWN:
+                mängija1_move = ai_speed
+        elif sündmus.type == KEYUP:
+            if sündmus.key == K_UP:
+                mängija1_move = 0.
+            elif sündmus.key == K_DOWN:
+                mängija1_move = 0.
 
-    screen.blit(background,(0,0))
-    frame = pygame.draw.rect(screen,(255,255,255),Rect((5,5),(630,470)),2)
-    middle_line = pygame.draw.aaline(screen,(255,255,255),(330,5),(330,475))
-    screen.blit(bar1,(bar1_x,bar1_y))
-    screen.blit(bar2,(bar2_x,bar2_y))
-    screen.blit(circle,(circle_x,circle_y))
-    screen.blit(score1,(250.,210.))
-    screen.blit(score2,(380.,210.))
+    ekraan.blit(kardin, (0, 0))
+    frame = pygame.draw.rect(ekraan, (255, 255, 255), Rect((5, 5), (630, 470)), 2)
+    middle_line = pygame.draw.aaline(ekraan, (255, 255, 255), (330, 5), (330, 475))
+    ekraan.blit(mängija1, (mängija1_x, mängija1_y))
+    ekraan.blit(mängija2, (mängija2_x, mängija2_y))
+    ekraan.blit(pall, (palli_x, palli_y))
+    ekraan.blit(font.render(str(mängija1_skoor), True, (255, 255, 255)), (250., 30.))
+    ekraan.blit(font.render(str(mängija2_skoor), True, (255, 255, 255)), (380., 30.))
 
-    bar1_y += bar1_move
-    
-# movement of circle
-    time_passed = clock.tick(30)
+    mängija1_y += mängija1_move
+
+    # movement of circle
+    time_passed = kell.tick(30)
     time_sec = time_passed / 1000.0
-    
-    circle_x += speed_x * time_sec
-    circle_y += speed_y * time_sec
+
+    palli_x += vertikaalne_kiirus * time_sec
+    palli_y += horisonaatlne_kiirus * time_sec
     ai_speed = speed_circ * time_sec
-#AI of the computer.
-    if circle_x >= 305.:
-        if not bar2_y == circle_y + 7.5:
-            if bar2_y < circle_y + 7.5:
-                bar2_y += ai_speed
-            if  bar2_y > circle_y - 42.5:
-                bar2_y -= ai_speed
+    # AI of the computer.
+    if palli_x >= 305.:
+        if not mängija2_y == palli_y + 7.5:
+            if mängija2_y < palli_y + 7.5:
+                mängija2_y += ai_speed
+            if mängija2_y > palli_y - 42.5:
+                mängija2_y -= ai_speed
         else:
-            bar2_y == circle_y + 7.5
-    
-    if bar1_y >= 420.: bar1_y = 420.
-    elif bar1_y <= 10. : bar1_y = 10.
-    if bar2_y >= 420.: bar2_y = 420.
-    elif bar2_y <= 10.: bar2_y = 10.
-#since i don't know anything about collision, ball hitting bars goes like this.
-    if circle_x <= bar1_x + 10.:
-        if circle_y >= bar1_y - 7.5 and circle_y <= bar1_y + 42.5:
-            circle_x = 20.
-            speed_x = -speed_x
-    if circle_x >= bar2_x - 15.:
-        if circle_y >= bar2_y - 7.5 and circle_y <= bar2_y + 42.5:
-            circle_x = 605.
-            speed_x = -speed_x
-    if circle_x < 5.:
-        bar2_score += 1
-        circle_x, circle_y = 320., 232.5
-        bar1_y,bar_2_y = 215., 215.
-    elif circle_x > 620.:
-        bar1_score += 1
-        circle_x, circle_y = 307.5, 232.5
-        bar1_y, bar2_y = 215., 215.
-    if circle_y <= 10.:
-        speed_y = -speed_y
-        circle_y = 10.
-    elif circle_y >= 457.5:
-        speed_y = -speed_y
-        circle_y = 457.5
+            mängija2_y == palli_y + 7.5
+
+    if mängija1_y >= 420:
+        mängija1_y = 420
+    elif mängija1_y <= 10:
+        mängija1_y = 10.
+    if mängija2_y >= 420:
+        mängija2_y = 420
+    elif mängija2_y <= 10:
+        mängija2_y = 10
+
+    if tõrjumine(palli_x,palli_y,mängija1_x,mängija1_y) or tõrjumine(palli_x,palli_y,mängija2_x,mängija2_y):
+        vertikaalne_kiirus = -vertikaalne_kiirus
+
+    if palli_x < 5.:
+        mängija2_skoor += 1
+        palli_x, palli_y = 320., 232.5
+        mängija1_y, bar_2_y = 215., 215.
+    elif palli_x > 620.:
+        mängija1_skoor += 1
+        palli_x, palli_y = 307.5, 232.5
+        mängija1_y, mängija2_y = 215., 215.
+    if palli_y <= 10.:
+        horisonaatlne_kiirus = -horisonaatlne_kiirus
+        palli_y = 10.
+    elif palli_y >= 457.5:
+        horisonaatlne_kiirus = -horisonaatlne_kiirus
+        palli_y = 457.5
 
     pygame.display.update()
