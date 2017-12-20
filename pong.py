@@ -32,9 +32,12 @@ kell = pygame.time.Clock()
 font = pygame.font.SysFont("calibri", 40)
 
 def tõrjumine(x,y,mängija_x,mängija_y):
-    if y >= mängija_y - 7.5 and y <= mängija_y + 42.5 and (x<25 or x>615):
+    if y >= mängija_y - 7.5 and y <= mängija_y + 42.5:
         return True
-
+    return False
+def vastu_seina(y):
+    if y<= 10 or y>= 457.5:
+        return True
 while True:
     for sündmus in pygame.event.get():
         if sündmus.type == QUIT:
@@ -86,9 +89,13 @@ while True:
         mängija2_y = 420
     elif mängija2_y <= 10:
         mängija2_y = 10
-
     if tõrjumine(palli_x,palli_y,mängija1_x,mängija1_y) or tõrjumine(palli_x,palli_y,mängija2_x,mängija2_y):
-        vertikaalne_kiirus = -vertikaalne_kiirus
+        if palli_x < 25:
+            palli_x=20
+            vertikaalne_kiirus = -vertikaalne_kiirus
+        elif palli_x>610:
+            palli_x=605
+            vertikaalne_kiirus = -vertikaalne_kiirus
 
     if palli_x < 5.:
         mängija2_skoor += 1
@@ -98,11 +105,7 @@ while True:
         mängija1_skoor += 1
         palli_x, palli_y = 307.5, 232.5
         mängija1_y, mängija2_y = 215., 215.
-    if palli_y <= 10.:
+    if vastu_seina(palli_y):
         horisonaatlne_kiirus = -horisonaatlne_kiirus
-        palli_y = 10.
-    elif palli_y >= 457.5:
-        horisonaatlne_kiirus = -horisonaatlne_kiirus
-        palli_y = 457.5
 
     pygame.display.update()
