@@ -35,9 +35,11 @@ def tõrjumine(x,y,mängija_x,mängija_y):
     if y >= mängija_y - 7.5 and y <= mängija_y + 42.5:
         return True
     return False
+
 def vastu_seina(y):
     if y<= 10 or y>= 457.5:
         return True
+    
 while True:
     for sündmus in pygame.event.get():
         if sündmus.type == QUIT:
