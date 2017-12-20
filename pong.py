@@ -1,19 +1,3 @@
-#!/usr/bin/env python
-#
-#       This program is free software; you can redistribute it and/or modify
-#       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
-#       (at your option) any later version.
-#       
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
-#
-#		It's my first actual game-making attempt. I know code could be much better 
-#		with classes or defs but I tried to make it short and understandable with very 
-#		little knowledge of python and pygame(I'm one of them). Enjoy.
-
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -21,107 +5,103 @@ import random
 
 pygame.init()
 
-screen=pygame.display.set_mode((640,480),0,32)
-pygame.display.set_caption("Pong Pong!")
+aken = pygame.display.set_mode((640,480),0,32)
+pygame.display.set_caption("Pinks")
 
-#Creating 2 bars, a ball and background.
-back = pygame.Surface((640,480))
-background = back.convert()
-background.fill((0,0,0))
-bar = pygame.Surface((10,50))
-bar1 = bar.convert()
-bar1.fill((0,0,255))
-bar2 = bar.convert()
-bar2.fill((255,0,0))
-circ_sur = pygame.Surface((15,15))
-circ = pygame.draw.circle(circ_sur,(0,255,0),(int(15/2),int(15/2)),int(15/2))
-circle = circ_sur.convert()
-circle.set_colorkey((0,0,0))
+
+taustaks = pygame.Surface((640,480))
+taust = taustaks.convert()
+taust.fill((0,0,0))
+post = pygame.Surface((10,50))
+mangija = post.convert()
+mangija.fill((255,255,255))
+vastane = post.convert()
+vastane.fill((255,255,255))
+ringi_ymbris = pygame.Surface((15,15))
+ringiks = pygame.draw.circle(ringi_ymbris,(255,255,255),(int(15/2),int(15/2)),int(15/2))
+ring = ringi_ymbris.convert()
+ring.set_colorkey((0,0,0))
 
 # some definitions
-bar1_x, bar2_x = 10. , 620.
-bar1_y, bar2_y = 215. , 215.
-circle_x, circle_y = 307.5, 232.5
-bar1_move, bar2_move = 0. , 0.
-speed_x, speed_y, speed_circ = 250., 250., 250.
-bar1_score, bar2_score = 0,0
+mangija_x, vastane_x = 10. , 620.
+mangija_y, vastane_y = 215. , 215.
+ring_x, ring_y = 307.5, 232.5
+mangija_move, vastane_move = 0. , 0.
+kiirus_x, kiirus_y, kiirus_circ = 250., 250., 250.
+mangija_punktid, vastane_punktid = 0,0
 #clock and font objects
-clock = pygame.time.Clock()
+kell = pygame.time.Clock()
 font = pygame.font.SysFont("calibri",40)
 
 while True:
     
     for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
         if event.type == KEYDOWN:
             if event.key == K_UP:
-                bar1_move = -ai_speed
+                mangija_move = -ai_kiirus
             elif event.key == K_DOWN:
-                bar1_move = ai_speed
+                mangija_move = ai_kiirus
         elif event.type == KEYUP:
             if event.key == K_UP:
-                bar1_move = 0.
+                mangija_move = 0.
             elif event.key == K_DOWN:
-                bar1_move = 0.
+                mangija_move = 0.
     
-    score1 = font.render(str(bar1_score), True,(255,255,255))
-    score2 = font.render(str(bar2_score), True,(255,255,255))
+    punktid_1 = font.render(str(mangija_punktid), True,(255,255,255))
+    punktid_2 = font.render(str(vastane_punktid), True,(255,255,255))
 
-    screen.blit(background,(0,0))
-    frame = pygame.draw.rect(screen,(255,255,255),Rect((5,5),(630,470)),2)
-    middle_line = pygame.draw.aaline(screen,(255,255,255),(330,5),(330,475))
-    screen.blit(bar1,(bar1_x,bar1_y))
-    screen.blit(bar2,(bar2_x,bar2_y))
-    screen.blit(circle,(circle_x,circle_y))
-    screen.blit(score1,(250.,210.))
-    screen.blit(score2,(380.,210.))
+    aken.blit(taust,(0,0))
+    frame = pygame.draw.rect(aken,(255,255,255),Rect((5,5),(630,470)),2)
+    aken.blit(mangija,(mangija_x,mangija_y))
+    aken.blit(vastane,(vastane_x,vastane_y))
+    aken.blit(ring,(ring_x,ring_y))
+    aken.blit(punktid_1,(250.,10.))
+    aken.blit(punktid_2,(380.,10.))
 
-    bar1_y += bar1_move
+    mangija_y += mangija_move
     
-# movement of circle
-    time_passed = clock.tick(30)
-    time_sec = time_passed / 1000.0
+    aega_lainud = kell.tick(30)
+    aeg = aega_lainud / 1000.0 #aeg sekundites
     
-    circle_x += speed_x * time_sec
-    circle_y += speed_y * time_sec
-    ai_speed = speed_circ * time_sec
+    ring_x += kiirus_x * aeg
+    ring_y += kiirus_y * aeg
+    ai_kiirus = kiirus_circ * aeg
 #AI of the computer.
-    if circle_x >= 305.:
-        if not bar2_y == circle_y + 7.5:
-            if bar2_y < circle_y + 7.5:
-                bar2_y += ai_speed
-            if  bar2_y > circle_y - 42.5:
-                bar2_y -= ai_speed
+    if ring_x >= 305.:
+        if not vastane_y == ring_y + 7.5:
+            if vastane_y < ring_y + 7.5:
+                vastane_y += ai_kiirus
+            if  vastane_y > ring_y - 42.5:
+                vastane_y -= ai_kiirus
         else:
-            bar2_y == circle_y + 7.5
+            vastane_y == ring_y + 7.5
     
-    if bar1_y >= 420.: bar1_y = 420.
-    elif bar1_y <= 10. : bar1_y = 10.
-    if bar2_y >= 420.: bar2_y = 420.
-    elif bar2_y <= 10.: bar2_y = 10.
+    if mangija_y >= 420.: mangija_y = 420.
+    elif mangija_y <= 10. : mangija_y = 10.
+    if vastane_y >= 420.: vastane_y = 420.
+    elif vastane_y <= 10.: vastane_y = 10.
 #since i don't know anything about collision, ball hitting bars goes like this.
-    if circle_x <= bar1_x + 10.:
-        if circle_y >= bar1_y - 7.5 and circle_y <= bar1_y + 42.5:
-            circle_x = 20.
-            speed_x = -speed_x
-    if circle_x >= bar2_x - 15.:
-        if circle_y >= bar2_y - 7.5 and circle_y <= bar2_y + 42.5:
-            circle_x = 605.
-            speed_x = -speed_x
-    if circle_x < 5.:
-        bar2_score += 1
-        circle_x, circle_y = 320., 232.5
-        bar1_y,bar_2_y = 215., 215.
-    elif circle_x > 620.:
-        bar1_score += 1
-        circle_x, circle_y = 307.5, 232.5
-        bar1_y, bar2_y = 215., 215.
-    if circle_y <= 10.:
-        speed_y = -speed_y
-        circle_y = 10.
-    elif circle_y >= 457.5:
-        speed_y = -speed_y
-        circle_y = 457.5
+    if ring_x <= mangija_x + 10.:
+        if ring_y >= mangija_y - 7.5 and ring_y <= mangija_y + 42.5:
+            ring_x = 20.
+            kiirus_x = -kiirus_x
+    if ring_x >= vastane_x - 15.:
+        if ring_y >= vastane_y - 7.5 and ring_y <= vastane_y + 42.5:
+            ring_x = 605.
+            kiirus_x = -kiirus_x
+    if ring_x < 5.:
+        vastane_punktid += 1
+        ring_x, ring_y = 320., 232.5
+        mangija_y,bar_2_y = 215., 215.
+    elif ring_x > 620.:
+        mangija_punktid += 1
+        ring_x, ring_y = 307.5, 232.5
+        mangija_y, vastane_y = 215., 215.
+    if ring_y <= 10.:
+        kiirus_y = -kiirus_y
+        ring_y = 10.
+    elif ring_y >= 457.5:
+        kiirus_y = -kiirus_y
+        ring_y = 457.5
 
     pygame.display.update()
